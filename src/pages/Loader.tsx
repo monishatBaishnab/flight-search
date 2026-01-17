@@ -17,7 +17,7 @@ const Loader = () => {
                 repeat: Infinity,
                 ease: 'easeInOut',
               }}
-              className="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg"
+              className="w-20 h-20 bg-cornflower-blue-500 rounded-2xl flex items-center justify-center shadow-lg"
             >
               <Plane className="w-10 h-10 text-white" strokeWidth={2} />
             </motion.div>
@@ -33,7 +33,7 @@ const Loader = () => {
                 repeat: Infinity,
                 ease: 'easeOut',
               }}
-              className="absolute inset-0 bg-blue-600 rounded-2xl"
+              className="absolute inset-0 bg-cornflower-blue-500 rounded-2xl"
             />
           </div>
         </div>
@@ -61,7 +61,7 @@ const Loader = () => {
                 repeat: Infinity,
                 delay: i * 0.2,
               }}
-              className="w-2 h-2 bg-blue-600 rounded-full"
+              className="w-2 h-2 bg-cornflower-blue-500 rounded-full"
             />
           ))}
         </div>

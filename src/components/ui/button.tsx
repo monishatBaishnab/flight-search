@@ -10,12 +10,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        primary:
-          'bg-cornflower-blue-400 hover:bg-cornflower-blue-500/85 active:bg-cornflower-blue-400 text-white',
         link: 'text-primary underline-offset-4 hover:underline',
-        ghost:
-          'bg-transparent text-foreground hover:bg-muted hover:text-foreground',
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        ghost: 'bg-transparent text-foreground hover:bg-muted hover:text-foreground',
+        light:'bg-gray-200/70 text-gray-500 hover:bg-gray-200/50 active:bg-gray-200/70',
+        primary: 'bg-cornflower-blue-400 hover:bg-cornflower-blue-500/85 active:bg-cornflower-blue-400 text-white',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
