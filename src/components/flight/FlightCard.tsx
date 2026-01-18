@@ -2,64 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
+import type { FlightOffersResponse } from '@/redux/features/flight/flight.type';
 import { format } from 'date-fns';
 import { ChevronRight, Clock, Plane, Tag } from 'lucide-react';
 
-type AirlineCode = 'QR' | 'EK' | 'default';
-
-interface Airline {
-  code: AirlineCode;
-  name: string;
-}
-
-interface AirportTime {
-  airport: string;
-  time: string;
-}
-
-interface FlightSegment {
-  from: string;
-  to: string;
-  layoverAirport?: string;
-  duration: number;
-}
-
-interface Flight {
-  id: string;
-  airline: Airline;
-  flightNumber: string;
-  departure: AirportTime;
-  arrival: AirportTime;
-  duration: number;
-  stops: number;
-  price: number;
-  segments?: FlightSegment[];
-}
-
-const AIRLINE_STYLES: Record<
-  AirlineCode,
-  { name: string; color: string; textColor: string }
-> = {
-  EK: {
-    name: 'Emirates',
-    color: 'bg-red-600',
-    textColor: 'text-red-600',
-  },
-  QR: {
-    name: 'Qatar Airways',
-    color: 'bg-purple-700',
-    textColor: 'text-purple-700',
-  },
-  default: {
-    name: 'Airline',
-    color: 'bg-slate-500',
-    textColor: 'text-slate-600',
-  },
-};
-
-const formatDuration = (minutes: number): string => {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
+const formatDuration = (isoDuration: string): string => {
+  const hours = isoDuration.match(/(\d+)H/);
+  const minutes = isoDuration.match(/(\d+)M/);
+  const h = hours ? hours[1] : '0';
+  const m = minutes ? minutes[1] : '0';
   return `${h}h ${m}m`;
 };
 
@@ -70,40 +21,45 @@ const getStopsLabel = (stops: number): string => {
   if (stops === 1) return '1 stop';
   return `${stops} stops`;
 };
+const AIRLINE_NAMES: Record<string, string> = {
+  EK: 'Emirates',
+  QR: 'Qatar Airways',
+  SQ: 'Singapore Airlines',
+  LH: 'Lufthansa',
+  BA: 'British Airways',
+  AF: 'Air France',
+  EY: 'Etihad Airways',
+  TK: 'Turkish Airlines',
+  AI: 'Air India',
+  UK: 'Vistara',
+  AA: 'American Airlines',
+  DL: 'Delta Air Lines',
+  UA: 'United Airlines',
+  CX: 'Cathay Pacific',
+};
 
-const DUMMY_FLIGHTS: Flight[] = [
-  {
-    id: '1',
-    airline: { code: 'EK', name: 'Emirates' },
-    flightNumber: 'EK 585',
-    departure: { airport: 'DAC', time: '2026-02-10T09:30:00Z' },
-    arrival: { airport: 'DXB', time: '2026-02-10T13:45:00Z' },
-    duration: 375,
-    stops: 0,
-    price: 780,
-  },
-  {
-    id: '2',
-    airline: { code: 'QR', name: 'Qatar Airways' },
-    flightNumber: 'QR 641',
-    departure: { airport: 'DAC', time: '2026-02-10T03:20:00Z' },
-    arrival: { airport: 'LHR', time: '2026-02-10T15:40:00Z' },
-    duration: 820,
-    stops: 1,
-    price: 690,
-    segments: [
-      { from: 'DAC', to: 'DOH', layoverAirport: 'DOH', duration: 300 },
-      { from: 'DOH', to: 'LHR', duration: 520 },
-    ],
-  },
-];
+const getAirlineName = (code: string): string => {
+  return AIRLINE_NAMES[code] || `${code} Airline`;
+};
 
-export default function FlightCardList() {
+interface FlightCardListProps {
+  data?: FlightOffersResponse;
+}
+
+export default function FlightCardList({ data }: FlightCardListProps) {
+  if (!data?.data || data.data.length === 0) {
+    return null;
+  }
+
   return (
     <div className="space-y-6">
-      {DUMMY_FLIGHTS.map((flight, index) => {
-        const airlineStyle =
-          AIRLINE_STYLES[flight.airline.code] ?? AIRLINE_STYLES.default;
+      {data.data.map((flight, index) => {
+        const itinerary = flight.itineraries[0];
+        const departure = itinerary.segments[0].departure;
+        const arrival =
+          itinerary.segments[itinerary.segments.length - 1].arrival;
+        const stops = itinerary.segments.length - 1;
+        const carrierCode = itinerary.segments[0].carrierCode;
 
         const isBestValue = index === 0;
         const isCheapest = index === 1;
@@ -131,18 +87,17 @@ export default function FlightCardList() {
                 <div className="flex items-center gap-3 lg:w-40">
                   <div
                     className={cn(
-                      'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm',
-                      airlineStyle.color,
+                      'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm bg-indigo-600',
                     )}
                   >
-                    {flight.airline.code}
+                    {carrierCode}
                   </div>
                   <div>
                     <p className="text-sm font-semibold">
-                      {flight.airline.name}
+                      {getAirlineName(carrierCode)}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {flight.flightNumber}
+                      {itinerary.segments[0].number}
                     </p>
                   </div>
                 </div>
@@ -152,10 +107,10 @@ export default function FlightCardList() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-2xl font-bold">
-                        {formatTime(flight.departure.time)}
+                        {formatTime(departure.at)}
                       </p>
                       <p className="text-sm text-slate-600">
-                        {flight.departure.airport}
+                        {departure.iataCode}
                       </p>
                     </div>
 
@@ -167,17 +122,17 @@ export default function FlightCardList() {
                       </div>
                       <div className="mt-2 flex justify-center text-xs gap-2 text-slate-500">
                         <Clock className="h-3 w-3" />
-                        {formatDuration(flight.duration)} •{' '}
-                        {getStopsLabel(flight.stops)}
+                        {formatDuration(itinerary.duration)} •{' '}
+                        {getStopsLabel(stops)}
                       </div>
                     </div>
 
                     <div>
                       <p className="text-2xl font-bold">
-                        {formatTime(flight.arrival.time)}
+                        {formatTime(arrival.at)}
                       </p>
                       <p className="text-sm text-slate-600">
-                        {flight.arrival.airport}
+                        {arrival.iataCode}
                       </p>
                     </div>
                   </div>
@@ -187,7 +142,8 @@ export default function FlightCardList() {
                 <div className="flex items-center gap-4 lg:w-48 justify-between lg:justify-end">
                   <div className="text-right">
                     <p className="text-2xl font-bold">
-                      ${flight.price.toLocaleString()}
+                      {flight.price.currency}{' '}
+                      {parseFloat(flight.price.total).toLocaleString()}
                     </p>
                     <p className="text-xs text-slate-500">per person</p>
                   </div>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const appServiceApi = createApi({
+export const appService = createApi({
   reducerPath: 'appService',
   baseQuery: async (args, api, extraOptions) => {
     const baseQuery = fetchBaseQuery({
