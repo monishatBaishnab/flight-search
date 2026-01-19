@@ -1,73 +1,81 @@
-# React + TypeScript + Vite
+# Flight Search
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, high-performance flight search engine built with **React 19**, **Vite**, and **Redux Toolkit**. Experience seamless trip planning with real-time data, advanced filtering, and intuitive price visualizations.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **🚀 Real-time Search**: Instant airport and city search with intelligent debounced autocomplete.
+- **📊 Interactive Price Analysis**: Visual price comparison charts using **Recharts** to find the best deals at a glance.
+- **🔍 Advanced Filtering**: Precise controls for price range, stops, preferred airlines, flight duration, and departure/arrival times.
+- **⚡ Smart Sorting**: Quick sorting by "Best Value" (calculated via a custom weighted algorithm), "Cheapest", and "Fastest".
+- **💎 Premium UX**: Sleek, responsive design built with **Tailwind CSS v4** and **Radix UI** primitives.
+- **📱 Responsive Design**: Fully optimized for mobile, tablet, and desktop views.
+- **🎨 Dynamic Theming**: Branded with a professional **Cornflower Blue** design system.
 
-## React Compiler
+## 🚀 Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Installation
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **Clone the repository:**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+   ```bash
+   git clone https://github.com/monishatBaishnab/flight-search.git
+   cd flight-search
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Environment Setup:**
+   Create a `.env` file in the root directory and add your Amadeus API credentials:
+
+   ```env
+   VITE_API_URL="https://test.api.amadeus.com"
+   VITE_CLIENT_ID="your_amadeus_client_id"
+   VITE_CLIENT_SECRET="your_amadeus_client_secret"
+   ```
+
+4. **Run the development server:**
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. **Open the application:**
+   Navigate to `http://localhost:5173` in your browser.
+
+## 📁 Project Structure
+
+```bash
+src/
+├── components/       # Reusable UI and Page-specific components
+│   ├── flight/       # Flight cards, filters, charts, search form
+│   └── ui/           # Primitive UI components (buttons, inputs, etc.)
+├── hooks/            # Custom React hooks (debounce, etc.)
+├── pages/            # Main layout and page views (Home)
+├── redux/            # RTK Query API, Store, and Slice definitions
+├── utils/            # Helper functions and formatting utilities
+└── assets/           # Global styles and static assets
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📜 Available Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `npm run dev` - Starts the development server with HMR.
+- `npm run build` - Compiles the application for production.
+- `npm run lint` - Runs ESLint to check for code quality issues.
+- `npm run preview` - Locally previews the production build.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+
+Built with ❤️ by [Monishat Baishnab](https://github.com/monishatBaishnab)
