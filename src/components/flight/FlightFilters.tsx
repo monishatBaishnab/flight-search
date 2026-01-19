@@ -133,7 +133,7 @@ export default function FlightFiltersPanel({ flights }: FlightFiltersProps) {
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <h3 className="font-bold text-slate-900 flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-indigo-500" />
+            <DollarSign className="h-4 w-4 text-cornflower-blue-500" />
             Filters
           </h3>
           <Button
@@ -272,22 +272,26 @@ export default function FlightFiltersPanel({ flights }: FlightFiltersProps) {
                     handleTimeToggle('departureTime', period.value)
                   }
                   className={cn(
-                    'flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all',
+                    'cursor-pointer flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all',
                     isSelected
-                      ? 'border-indigo-500 bg-indigo-50'
+                      ? 'border-cornflower-blue-500 bg-cornflower-blue-50'
                       : 'border-slate-100 hover:border-slate-200',
                   )}
                 >
                   <Icon
                     className={cn(
                       'h-4 w-4',
-                      isSelected ? 'text-indigo-600' : 'text-slate-400',
+                      isSelected
+                        ? 'text-cornflower-blue-600'
+                        : 'text-slate-400',
                     )}
                   />
                   <span
                     className={cn(
                       'text-xs font-medium',
-                      isSelected ? 'text-indigo-700' : 'text-slate-600',
+                      isSelected
+                        ? 'text-cornflower-blue-700'
+                        : 'text-slate-600',
                     )}
                   >
                     {period.label}
@@ -316,22 +320,26 @@ export default function FlightFiltersPanel({ flights }: FlightFiltersProps) {
                   type="button"
                   onClick={() => handleTimeToggle('arrivalTime', period.value)}
                   className={cn(
-                    'flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all',
+                    'cursor-pointer flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all',
                     isSelected
-                      ? 'border-indigo-500 bg-indigo-50'
+                      ? 'border-cornflower-blue-500 bg-cornflower-blue-50'
                       : 'border-slate-100 hover:border-slate-200',
                   )}
                 >
                   <Icon
                     className={cn(
                       'h-4 w-4',
-                      isSelected ? 'text-indigo-600' : 'text-slate-400',
+                      isSelected
+                        ? 'text-cornflower-blue-600'
+                        : 'text-slate-400',
                     )}
                   />
                   <span
                     className={cn(
                       'text-xs font-medium',
-                      isSelected ? 'text-indigo-700' : 'text-slate-600',
+                      isSelected
+                        ? 'text-cornflower-blue-700'
+                        : 'text-slate-600',
                     )}
                   >
                     {period.label}

@@ -51,9 +51,54 @@ export default function FlightCardList({ data }: FlightCardListProps) {
     return null;
   }
 
+  // Calculate best value and cheapest
+  const parseDuration = (isoDuration: string): number => {
+    const hours = isoDuration.match(/(\d+)H/);
+    const minutes = isoDuration.match(/(\d+)M/);
+    const h = hours ? parseInt(hours[1]) : 0;
+    const m = minutes ? parseInt(minutes[1]) : 0;
+    return h * 60 + m;
+  };
+
+  // Find cheapest flight
+  const prices = data.data.map((f) => parseFloat(f.price.total));
+  const minPrice = Math.min(...prices);
+  const cheapestFlightId = data.data.find(
+    (f) => parseFloat(f.price.total) === minPrice,
+  )?.id;
+
+  // Find best value (combination of price and duration)
+  const flightsWithScores = data.data.map((flight) => {
+    const price = parseFloat(flight.price.total);
+    const duration = parseDuration(flight.itineraries[0].duration);
+
+    const durations = data.data.map((f) =>
+      parseDuration(f.itineraries[0].duration),
+    );
+    const maxPrice = Math.max(...prices);
+    const minDuration = Math.min(...durations);
+    const maxDuration = Math.max(...durations);
+
+    const normalizedPrice =
+      maxPrice > minPrice ? (price - minPrice) / (maxPrice - minPrice) : 0;
+    const normalizedDuration =
+      maxDuration > minDuration
+        ? (duration - minDuration) / (maxDuration - minDuration)
+        : 0;
+
+    // Best value score (lower is better) - 60% price, 40% duration
+    const score = normalizedPrice * 0.6 + normalizedDuration * 0.4;
+
+    return { id: flight.id, score };
+  });
+
+  const bestValueFlight = flightsWithScores.reduce((best, current) =>
+    current.score < best.score ? current : best,
+  );
+
   return (
     <div className="space-y-6">
-      {data.data.map((flight, index) => {
+      {data.data.map((flight) => {
         const itinerary = flight.itineraries[0];
         const departure = itinerary.segments[0].departure;
         const arrival =
@@ -61,14 +106,14 @@ export default function FlightCardList({ data }: FlightCardListProps) {
         const stops = itinerary.segments.length - 1;
         const carrierCode = itinerary.segments[0].carrierCode;
 
-        const isBestValue = index === 0;
-        const isCheapest = index === 1;
+        const isBestValue = flight.id === bestValueFlight.id;
+        const isCheapest = flight.id === cheapestFlightId;
 
         return (
           <div
             key={flight.id}
             className={cn(
-              'bg-white rounded-2xl border transition hover:shadow',
+              'bg-white rounded-2xl border transition border-gray-200 hover:shadow',
               (isBestValue || isCheapest) && 'border-gray-200',
             )}
           >
@@ -87,7 +132,7 @@ export default function FlightCardList({ data }: FlightCardListProps) {
                 <div className="flex items-center gap-3 lg:w-40">
                   <div
                     className={cn(
-                      'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm bg-indigo-600',
+                      'w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm bg-cornflower-blue-600',
                     )}
                   >
                     {carrierCode}
@@ -117,7 +162,7 @@ export default function FlightCardList({ data }: FlightCardListProps) {
                     <div className="flex-1">
                       <div className="flex items-center">
                         <div className="flex-1 h-[2px] bg-slate-200" />
-                        <Plane className="h-4 w-4 mx-2 text-indigo-500 -rotate-45" />
+                        <Plane className="h-4 w-4 mx-2 text-cornflower-blue-500 -rotate-45" />
                         <div className="flex-1 h-[2px] bg-slate-200" />
                       </div>
                       <div className="mt-2 flex justify-center text-xs gap-2 text-slate-500">

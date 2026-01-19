@@ -96,7 +96,7 @@ export default function SortingTabs({
               <Icon
                 className={cn(
                   'h-4 w-4',
-                  isActive ? 'text-indigo-600' : 'text-slate-400',
+                  isActive ? 'text-cornflower-blue-600' : 'text-slate-400',
                 )}
               />
               <span
@@ -113,7 +113,7 @@ export default function SortingTabs({
               <span
                 className={cn(
                   'text-xs',
-                  isActive ? 'text-indigo-600' : 'text-slate-400',
+                  isActive ? 'text-cornflower-blue-600' : 'text-slate-400',
                 )}
               >
                 {bestValue}

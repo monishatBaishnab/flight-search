@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, type LucideIcon } from 'lucide-react';
+import { Check, Loader2, type LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ export interface AutocompleteProps {
   popoverClassName?: string;
   disabled?: boolean;
   onSearch?: (value: string) => void;
+  isLoading?: boolean;
 }
 
 export function Autocomplete({
@@ -52,6 +53,7 @@ export function Autocomplete({
   popoverClassName,
   disabled = false,
   onSearch,
+  isLoading = false,
 }: AutocompleteProps) {
   const [open, setOpen] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState('');
@@ -98,29 +100,36 @@ export function Autocomplete({
               className="h-9"
             />
             <CommandList>
-              <CommandEmpty>{emptyMessage}</CommandEmpty>
-              <CommandGroup>
-                {options.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                    value={option.value}
-                    onSelect={(currentValue) => {
-                      handleValueChange(
-                        currentValue === value ? '' : currentValue,
-                      );
-                      setOpen(false);
-                    }}
-                  >
-                    {option.label}
-                    <Check
-                      className={cn(
-                        'ml-auto',
-                        value === option.value ? 'opacity-100' : 'opacity-0',
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+              {isLoading && (
+                <div className="flex items-center justify-center py-6">
+                  <Loader2 className="size-4 animate-spin text-gray-400" />
+                </div>
+              )}
+              {!isLoading && <CommandEmpty>{emptyMessage}</CommandEmpty>}
+              {!isLoading && (
+                <CommandGroup>
+                  {options.map((option) => (
+                    <CommandItem
+                      key={option.value}
+                      value={option.value}
+                      onSelect={(currentValue) => {
+                        handleValueChange(
+                          currentValue === value ? '' : currentValue,
+                        );
+                        setOpen(false);
+                      }}
+                    >
+                      {option.label}
+                      <Check
+                        className={cn(
+                          'ml-auto',
+                          value === option.value ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
             </CommandList>
           </Command>
         </PopoverContent>

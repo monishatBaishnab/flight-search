@@ -7,7 +7,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { capitalize } from '@/utils/capitalize';
 import { Loader2, PlaneLanding, PlaneTakeoff, Search, X } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
@@ -36,15 +36,47 @@ const SearchForm = ({ onSearch, isLoading }: SearchFormProps) => {
   const debouncedFromSearch = useDebouncedValue(fromSearch, 500);
   const debouncedToSearch = useDebouncedValue(toSearch, 500);
 
-  const { data: originLocations } = useGetOriginLocationsQuery(
-    { keyword: debouncedFromSearch },
-    { skip: !((debouncedFromSearch?.length || 0) > 2) },
-  );
+  const { data: originLocations, isFetching: isOriginLoading } =
+    useGetOriginLocationsQuery(
+      { keyword: debouncedFromSearch },
+      { skip: !((debouncedFromSearch?.length || 0) > 2) },
+    );
 
-  const { data: destinationLocations } = useGetOriginLocationsQuery(
-    { keyword: debouncedToSearch },
-    { skip: !((debouncedToSearch?.length || 0) > 2) },
-  );
+  const { data: destinationLocations, isFetching: isDestinationLoading } =
+    useGetOriginLocationsQuery(
+      { keyword: debouncedToSearch },
+      { skip: !((debouncedToSearch?.length || 0) > 2) },
+    );
+
+  const originOptions = useMemo(() => {
+    if (!originLocations?.data) return [];
+    const seen = new Set();
+    return originLocations.data
+      .filter((item) => {
+        if (!item.iataCode || seen.has(item.iataCode)) return false;
+        seen.add(item.iataCode);
+        return true;
+      })
+      .map((item) => ({
+        label: capitalize(item.name) as string,
+        value: item.iataCode as string,
+      }));
+  }, [originLocations]);
+
+  const destinationOptions = useMemo(() => {
+    if (!destinationLocations?.data) return [];
+    const seen = new Set();
+    return destinationLocations.data
+      .filter((item) => {
+        if (!item.iataCode || seen.has(item.iataCode)) return false;
+        seen.add(item.iataCode);
+        return true;
+      })
+      .map((item) => ({
+        label: capitalize(item.name) as string,
+        value: item.iataCode as string,
+      }));
+  }, [destinationLocations]);
 
   if (!params) return null;
 
@@ -114,12 +146,7 @@ const SearchForm = ({ onSearch, isLoading }: SearchFormProps) => {
         <div className="space-y-2">
           <Label>From</Label>
           <Autocomplete
-            options={
-              originLocations?.data?.map((item) => ({
-                label: capitalize(item.name) as string,
-                value: item.iataCode as string,
-              })) || []
-            }
+            options={originOptions}
             icon={PlaneTakeoff}
             placeholder="Where from?"
             searchPlaceholder="Search location..."
@@ -129,17 +156,13 @@ const SearchForm = ({ onSearch, isLoading }: SearchFormProps) => {
               handleParamChange({ originLocationCode: val })
             }
             onSearch={setFromSearch}
+            isLoading={isOriginLoading}
           />
         </div>
         <div className="space-y-2">
           <Label>To</Label>
           <Autocomplete
-            options={
-              destinationLocations?.data?.map((item) => ({
-                label: capitalize(item.name) as string,
-                value: item.iataCode as string,
-              })) || []
-            }
+            options={destinationOptions}
             icon={PlaneLanding}
             placeholder="Where to?"
             searchPlaceholder="Search location..."
@@ -149,6 +172,7 @@ const SearchForm = ({ onSearch, isLoading }: SearchFormProps) => {
               handleParamChange({ destinationLocationCode: val })
             }
             onSearch={setToSearch}
+            isLoading={isDestinationLoading}
           />
         </div>
         <div className="space-y-2">
